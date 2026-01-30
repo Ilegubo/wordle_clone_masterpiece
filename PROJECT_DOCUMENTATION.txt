@@ -1,0 +1,79 @@
+PROJECT DOCUMENTATION
+=====================
+
+1. Executive Summary
+--------------------
+This project is a Word Guessing Game implemented in Python using the Flet framework. It provides an interactive interface for users to guess words, similar to popular word puzzle games, with both on-screen and physical keyboard support.
+
+2. Project Objectives
+---------------------
+- Develop an engaging and interactive word guessing game.
+- Support both on-screen and physical keyboard inputs.
+- Provide visual feedback for correct, misplaced, and incorrect letters.
+- Allow users to select word length and theme.
+- Ensure a user-friendly and visually appealing interface.
+
+3. Project Scope
+----------------
+- Single-player word guessing game.
+- Customizable themes and word lengths.
+- No multiplayer or online features.
+- No persistent user data storage.
+
+4. Project Guidelines
+---------------------
+- Use Python and Flet for UI and logic.
+- Follow best practices for code readability and modularity.
+- Provide clear visual cues for game status and letter correctness.
+- Ensure cross-platform compatibility (Windows, Mac, Linux).
+
+5. System Overview
+------------------
+- The game randomly selects a word from a local or downloaded word list.
+- Users guess the word by entering letters via the on-screen or physical keyboard.
+- The game provides color and formatting hints for each letter:
+  - Uppercase: correct letter in correct position
+  - Lowercase: correct letter in wrong position
+  - Crossed-out lowercase: letter not in the word
+- The interface is split: keyboard on the left, game board and status on the right.
+
+6. Source Code
+--------------
+See `word_game.py` for the full source code. Key components:
+- `WordGuessingGame` class: main game logic and UI
+- Methods for game setup, input handling, UI updates, and feedback
+- Event handlers for keyboard and button actions
+
+7. Dependencies Imported
+------------------------
+- flet
+- random
+- requests
+- os
+- typing (List, Dict, Optional)
+
+8. Special Permissions Required
+------------------------------
+- Internet access (to download word list if not present)
+- File system access (to read/write `words.txt`)
+
+9. Proposed Database System
+--------------------------
+- No database system is used or required. All data is stored in local text files (`words.txt`).
+
+10. Project Document Structure & Presentation
+--------------------------------------------
+- `word_game.py`: main source code
+- `words.txt`: word list
+- `requirements.txt`: dependencies
+- `README.md`: basic project info
+- `PROJECT_DOCUMENTATION.txt`: this documentation
+
+11. Evaluation Criteria
+----------------------
+- Functionality: game runs without errors, all features work as described
+- Usability: intuitive interface, clear feedback, easy to play
+- Code Quality: readable, maintainable, modular
+- Visual Design: clean layout, responsive UI
+- Robustness: handles invalid input, edge cases gracefully
+- Documentation: clear, complete, and up-to-date
