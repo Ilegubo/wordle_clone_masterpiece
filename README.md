@@ -4,13 +4,12 @@ A modern, interactive word guessing game built with Flet, featuring beautiful th
 
 ## Features
 
-- 🎨 **Multiple Themes**: Solarized Dark, Solarized Light, Cursor Dark, and Light Modern themes
-- ⌨️ **Interactive Keyboard**: On-screen keyboard with toggle option
-- 📏 **Variable Word Length**: Support for 3-8 letter words
-- 🎯 **Wordle-like Gameplay**: Individual letter input with color-coded feedback
-- 🔄 **Play Again**: Easy restart after winning or losing
-- 📱 **Responsive Design**: Dynamic and resizable window
-- 📚 **Large Word Database**: Downloads comprehensive English word list
+-  **Multiple Themes**: Solarized Dark, Solarized Light, Cursor Dark, and Light Modern themes
+-  **Interactive Keyboard**: On-screen keyboard with toggle option
+-  **Variable Word Length**: Support for 5-8 letter words
+-  **Wordle-like Gameplay**: Individual letter input with color-coded feedback
+- **Responsive Design**: Dynamic and resizable window
+- **Small Word Database**: Downloads basic English word list
 
 ## Installation
 
@@ -51,16 +50,13 @@ A modern, interactive word guessing game built with Flet, featuring beautiful th
 3. **Color Feedback**:
    - 🟢 **Green**: Letter is correct and in the right position
    - 🟡 **Yellow**: Letter is correct but in the wrong position
-   - ⚫ **Gray**: Letter is not in the word
+   - 🔴 **Red**: Letter is not in the word
 
 4. **After Game**:
    - Click "Play Again" to start a new game
    - Change settings anytime during gameplay
 
 ## Themes
-
-- **Solarized Dark**: Classic dark theme with blue accents
-- **Solarized Light**: Clean light theme with high contrast
 - **Cursor Dark**: VS Code-inspired dark theme
 - **Light Modern**: Modern light theme with subtle colors
 
@@ -75,11 +71,12 @@ A modern, interactive word guessing game built with Flet, featuring beautiful th
 
 ```
 word guessing game/
-├── word_game.py          # Main game application
-├── requirements.txt      # Python dependencies
-├── README.md            # This file
-├── byu_secret_word.py   # Original console version
-└── words.txt            # Downloaded word list (created automatically)
+
+├── word_game.py                # Main game application
+├── requirements.txt            # Python dependencies
+├── README.md                   # This file
+├── byu_project_secret_word.py  # Original console version
+└── words.txt                   # Downloaded word list (created automatically)
 ```
 
 ## Troubleshooting
