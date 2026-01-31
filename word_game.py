@@ -176,12 +176,45 @@ class WordGuessingGame:
     
     def get_letter_color(self, letter: str, position: int, attempt: str) -> str:
         """Get color for a letter based on game rules"""
+        # Deprecated single-letter check; prefer compute_attempt_colors for correct handling
         if letter == self.current_word[position]:
-            return self.themes[self.current_theme]["success"]  # Green
+            return self.themes[self.current_theme]["success"]
         elif letter in self.current_word:
-            return self.themes[self.current_theme]["warning"]  # Yellow
+            return self.themes[self.current_theme]["warning"]
         else:
-            return self.themes[self.current_theme]["error"]  # Gray
+            return self.themes[self.current_theme]["error"]
+
+    def compute_attempt_colors(self, attempt: str) -> List[str]:
+        """Compute colors for an entire attempt using Wordle rules handling repeated letters.
+
+        - First mark exact matches (green)
+        - Count remaining letters in target (excluding greens)
+        - For non-green positions, mark yellow only up to remaining counts, otherwise gray
+        """
+        target = self.current_word
+        n = len(target)
+        colors: List[Optional[str]] = [None] * n
+
+        # Step 1: mark greens and build counts for remaining target letters
+        remaining: Dict[str, int] = {}
+        for i in range(n):
+            if i < len(attempt) and attempt[i] == target[i]:
+                colors[i] = self.themes[self.current_theme]["success"]
+            else:
+                remaining[target[i]] = remaining.get(target[i], 0) + 1
+
+        # Step 2: mark yellows/greys for non-green positions
+        for i in range(n):
+            if colors[i] is not None:
+                continue
+            ch = attempt[i] if i < len(attempt) else ""
+            if ch and remaining.get(ch, 0) > 0:
+                colors[i] = self.themes[self.current_theme]["warning"]
+                remaining[ch] -= 1
+            else:
+                colors[i] = self.themes[self.current_theme]["error"]
+
+        return colors
     
     def create_ui(self, page: ft.Page):
         """Create the main UI"""
@@ -402,8 +435,9 @@ class WordGuessingGame:
         # Update game board
         for attempt in self.attempts:
             row = ft.Row(spacing=5, alignment=ft.MainAxisAlignment.CENTER)
+            colors = self.compute_attempt_colors(attempt)
             for i, letter in enumerate(attempt):
-                color = self.get_letter_color(letter, i, attempt)
+                color = colors[i]
                 row.controls.append(self.create_letter_box(letter, color))
             self.game_board.controls.append(row)
         
