@@ -201,7 +201,7 @@ class WordGuessingGame:
                 ft.dropdown.Option("light_modern", "Light Theme"),
                 ft.dropdown.Option("cursor_dark", "Dark Theme"),
             ],
-            # on_change=self.change_theme
+            on_select=self.change_theme
         )
         
         # Word length selector
@@ -214,7 +214,7 @@ class WordGuessingGame:
                 ft.dropdown.Option("7", "7 Letters"),
                 ft.dropdown.Option("8", "8 Letters"),
             ],
-            on_change=self.change_word_length
+            on_select=self.change_word_length
         )
         
         # Keyboard toggle
@@ -245,9 +245,9 @@ class WordGuessingGame:
         )
 
         # Game controls: Begin / Pause / End
-        self.begin_btn = ft.ElevatedButton("Begin", on_click=lambda e: self.begin_game())
-        self.pause_btn = ft.ElevatedButton("Pause", on_click=lambda e: self.pause_game())
-        self.end_btn = ft.ElevatedButton("End", on_click=lambda e: self.end_game())
+        self.begin_btn = ft.Button("Begin", on_click=lambda e: self.begin_game())
+        self.pause_btn = ft.Button("Pause", on_click=lambda e: self.pause_game())
+        self.end_btn = ft.Button("End", on_click=lambda e: self.end_game())
         self.controls_row = ft.Row([
             self.begin_btn,
             self.pause_btn,
@@ -255,7 +255,7 @@ class WordGuessingGame:
         ], alignment=ft.MainAxisAlignment.START, spacing=10)
         
         # Play again button
-        self.play_again_btn = ft.ElevatedButton(
+        self.play_again_btn = ft.Button(
             "Play Again",
             on_click=self.play_again,
             visible=False
@@ -270,7 +270,7 @@ class WordGuessingGame:
                         self.keyboard
                     ], alignment=ft.MainAxisAlignment.START, spacing=0),
                     width=480,
-                    alignment=ft.alignment.top_left
+                    alignment=ft.Alignment(-1, -1)
                 ),
                 # Right: Game board, guess display, status, controls (vertical)
                 ft.Column([
@@ -355,9 +355,9 @@ class WordGuessingGame:
         return ft.Container(
             width=50,
             height=50,
-            border=ft.border.all(2, color),
+            border=ft.Border(left=ft.BorderSide(2, color), right=ft.BorderSide(2, color), top=ft.BorderSide(2, color), bottom=ft.BorderSide(2, color)),
             border_radius=8,
-            alignment=ft.alignment.center,
+            alignment=ft.Alignment(0, 0),
             bgcolor=theme["card_bg"] if not is_current else theme["primary"],
             content=ft.Text(
                 letter.upper() if letter else "",
@@ -374,7 +374,7 @@ class WordGuessingGame:
         
         buttons = []
         for letter in letters:
-            btn = ft.ElevatedButton(
+            btn = ft.Button(
                 letter.upper(),
                 width=40,
                 height=50,
@@ -436,7 +436,7 @@ class WordGuessingGame:
             # Add control buttons
             control_row = ft.Row(
                 [
-                    ft.ElevatedButton(
+                    ft.Button(
                         "⌫",
                         width=60,
                         height=50,
@@ -447,7 +447,7 @@ class WordGuessingGame:
                             color=theme["fg"]
                         )
                     ),
-                    ft.ElevatedButton(
+                    ft.Button(
                         "Enter",
                         width=80,
                         height=50,
