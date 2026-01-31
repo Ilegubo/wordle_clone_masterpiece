@@ -3,6 +3,6 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
-# Run as a web service on port 8080
-# Run as a web app to avoid missing desktop libraries
+EXPOSE 8080
+# Run as web app to avoid missing libgtk-3 desktop libraries
 CMD ["python", "word_game.py", "--web", "--port", "8080"]

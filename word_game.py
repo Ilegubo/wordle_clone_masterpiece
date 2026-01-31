@@ -186,8 +186,8 @@ class WordGuessingGame:
     def create_ui(self, page: ft.Page):
         """Create the main UI"""
         self.page = page
+        page.theme_mode = ft.ThemeMode.DARK  # Set immediately to prevent light-to-dark flicker
         page.title = "Word Guessing Game"
-        page.theme_mode = ft.ThemeMode.LIGHT
         page.window_width = 800
         page.window_height = 900
         page.window_resizable = True
@@ -555,4 +555,4 @@ def main(page: ft.Page):
     game.create_ui(page)
 
 if __name__ == "__main__":
-    ft.app(target=main) 
+    ft.app(target=main, view=ft.AppView.WEB_BROWSER, port=8080, host="0.0.0.0") 
