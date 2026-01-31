@@ -301,16 +301,19 @@ class WordGuessingGame:
         )
         
         # Layout
+        # Left: Keyboard container (will be toggled visible/invisible)
+        self.keyboard_container = ft.Container(
+            content=ft.Column([
+                self.keyboard
+            ], alignment=ft.MainAxisAlignment.START, spacing=0),
+            width=480,
+            alignment=ft.Alignment(-1, -1),
+            visible=self.show_keyboard  # Start visible based on show_keyboard
+        )
+        
         page.add(
             ft.Row([
-                # Left: Keyboard (vertical) centered within fixed width
-                ft.Container(
-                    content=ft.Column([
-                        self.keyboard
-                    ], alignment=ft.MainAxisAlignment.START, spacing=0),
-                    width=480,
-                    alignment=ft.Alignment(-1, -1)
-                ),
+                self.keyboard_container,
                 # Right: Game board, guess display, status, controls (vertical)
                 ft.Column([
                     ft.Row([
@@ -351,7 +354,10 @@ class WordGuessingGame:
     def toggle_keyboard(self, e):
         """Toggle keyboard visibility"""
         self.show_keyboard = e.control.value
+        self.keyboard_container.visible = self.show_keyboard
         self.update_ui()
+        if hasattr(self, 'page') and self.page:
+            self.page.update()
     
     def apply_theme(self):
         """Apply current theme to the page and UI"""
