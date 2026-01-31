@@ -376,13 +376,14 @@ class WordGuessingGame:
         for letter in letters:
             btn = ft.Button(
                 letter.upper(),
-                width=40,
+                width=55,
                 height=50,
                 on_click=lambda e, l=letter: self.add_letter(l),
                 disabled=keyboard_disabled,
                 style=ft.ButtonStyle(
                     bgcolor=theme["card_bg"],
-                    color=theme["fg"]
+                    color=theme["fg"],
+                    alignment=ft.Alignment(0, 0)
                 )
             )
             buttons.append(btn)
@@ -444,18 +445,20 @@ class WordGuessingGame:
                         disabled=(not self.game_started) or self.game_paused or self.game_over,
                         style=ft.ButtonStyle(
                             bgcolor=theme["card_bg"],
-                            color=theme["fg"]
+                            color=theme["fg"],
+                            alignment=ft.Alignment(0, 0)
                         )
                     ),
                     ft.Button(
                         "Enter",
-                        width=80,
+                        width=85,
                         height=50,
                         on_click=lambda e: self.submit_guess(),
                         disabled=(not self.game_started) or self.game_paused or self.game_over,
                         style=ft.ButtonStyle(
                             bgcolor=theme["primary"],
-                            color=theme["fg"]
+                            color=theme["fg"],
+                            alignment=ft.Alignment(0, 0)
                         )
                     )
                 ],
