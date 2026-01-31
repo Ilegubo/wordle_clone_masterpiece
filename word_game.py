@@ -201,7 +201,7 @@ class WordGuessingGame:
                 ft.dropdown.Option("light_modern", "Light Theme"),
                 ft.dropdown.Option("cursor_dark", "Dark Theme"),
             ],
-            on_change=self.change_theme
+            # on_change=self.change_theme
         )
         
         # Word length selector
