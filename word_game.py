@@ -3,6 +3,10 @@ import random
 import requests
 import os
 from typing import List, Dict, Optional
+try:
+    from english_words import english_words_lower_alpha_set as all_words
+except ImportError:
+    all_words = set()
 
 class WordGuessingGame:
     def __init__(self):
@@ -100,18 +104,18 @@ class WordGuessingGame:
             f.write("\n".join(fallback_words))
     
     def load_words(self):
-        """Load and organize words by length"""
+        """Load and organize words (only 5-letter words)"""
         try:
             with open("words.txt", "r") as f:
                 words = f.read().splitlines()
             
-            # Filter words and organize by length (only 5-8 letters)
+            # Filter words: only 5-letter words
             for word in words:
                 word = word.strip().lower()
-                if word and not word.startswith('#') and word.isalpha() and 5 <= len(word) <= 8:
-                    if len(word) not in self.words_by_length:
-                        self.words_by_length[len(word)] = []
-                    self.words_by_length[len(word)].append(word)
+                if word and not word.startswith('#') and word.isalpha() and len(word) == 5:
+                    if 5 not in self.words_by_length:
+                        self.words_by_length[5] = []
+                    self.words_by_length[5].append(word)
             
             # print(f"Loaded {sum(len(words) for words in self.words_by_length.values())} words")
         except Exception as e:
@@ -119,13 +123,20 @@ class WordGuessingGame:
             self.create_fallback_words()
             self.load_words()
     
-    def get_random_word(self, length: int) -> str:
-        """Get a random word of specified length"""
-        if length in self.words_by_length and self.words_by_length[length]:
-            return random.choice(self.words_by_length[length])
-        else:
-            # Fallback to a default word
-            return "hello" if length == 5 else "python"
+    def get_random_word(self, length: int = 5) -> str:
+        """Get a random 5-letter word"""
+        # Always use length 5
+        if 5 in self.words_by_length and self.words_by_length[5]:
+            return random.choice(self.words_by_length[5])
+        
+        # Fallback: use english_words library to find 5-letter words
+        if all_words:
+            candidates = [w for w in all_words if len(w) == 5 and w.isalpha()]
+            if candidates:
+                return random.choice(candidates)
+        
+        # Last resort: common 5-letter word
+        return "hello"
     
     def start_new_game(self):
         """Start a new game"""
@@ -194,12 +205,17 @@ class WordGuessingGame:
         target = self.current_word
         n = len(target)
         colors: List[Optional[str]] = [None] * n
+        
+        try:
+            theme = self.themes.get(self.current_theme, self.themes["cursor_dark"])
+        except (KeyError, IndexError):
+            theme = {"success": "#00ff00", "warning": "#ffff00", "error": "#ff0000"}
 
         # Step 1: mark greens and build counts for remaining target letters
         remaining: Dict[str, int] = {}
         for i in range(n):
             if i < len(attempt) and attempt[i] == target[i]:
-                colors[i] = self.themes[self.current_theme]["success"]
+                colors[i] = theme.get("success", "#00ff00")
             else:
                 remaining[target[i]] = remaining.get(target[i], 0) + 1
 
@@ -209,10 +225,10 @@ class WordGuessingGame:
                 continue
             ch = attempt[i] if i < len(attempt) else ""
             if ch and remaining.get(ch, 0) > 0:
-                colors[i] = self.themes[self.current_theme]["warning"]
+                colors[i] = theme.get("warning", "#ffff00")
                 remaining[ch] -= 1
             else:
-                colors[i] = self.themes[self.current_theme]["error"]
+                colors[i] = theme.get("error", "#ff0000")
 
         return colors
     
@@ -221,8 +237,8 @@ class WordGuessingGame:
         self.page = page
         page.title = "Word Guessing Game"
         page.theme_mode = ft.ThemeMode.DARK
-        page.window_width = 800
-        page.window_height = 900
+        page.window_width = 650
+        page.window_height = 550
         page.window_resizable = True
         page.padding = 20
         
@@ -237,18 +253,8 @@ class WordGuessingGame:
             on_select=self.change_theme
         )
         
-        # Word length selector
-        self.length_dropdown = ft.Dropdown(
-            label="Word Length",
-            value=str(self.word_length),
-            options=[
-                ft.dropdown.Option("5", "5 Letters"),
-                ft.dropdown.Option("6", "6 Letters"),
-                ft.dropdown.Option("7", "7 Letters"),
-                ft.dropdown.Option("8", "8 Letters"),
-            ],
-            on_select=self.change_word_length
-        )
+        # Word length selector - removed (only 5-letter words supported)
+        # self.length_dropdown is no longer used
         
         # Keyboard toggle
         self.keyboard_toggle = ft.Switch(
@@ -309,7 +315,6 @@ class WordGuessingGame:
                 ft.Column([
                     ft.Row([
                         ft.Container(self.theme_dropdown, bgcolor=None),
-                        ft.Container(self.length_dropdown, bgcolor=None),
                         ft.Container(self.keyboard_toggle, bgcolor=None),
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             ft.Divider(),
@@ -330,8 +335,8 @@ class WordGuessingGame:
         self.download_words()
         self.load_words()
         self.start_new_game()
+        self._setup_theme()
         self.update_ui()
-        self.apply_theme()
         # Set up physical keyboard event handlers
         page.on_keyboard_event = self.handle_keyboard_event
         page.on_key_down = self.handle_keyboard_event
@@ -343,40 +348,42 @@ class WordGuessingGame:
         self.apply_theme()
         self.update_ui()
     
-    def change_word_length(self, e):
-        """Change word length and restart game"""
-        self.word_length = int(e.control.value)
-        self.start_new_game()
-        self.update_ui()
-    
     def toggle_keyboard(self, e):
         """Toggle keyboard visibility"""
         self.show_keyboard = e.control.value
         self.update_ui()
     
     def apply_theme(self):
-        """Apply current theme to the page"""
+        """Apply current theme to the page and UI"""
+        self._setup_theme()
+        # Proactively refresh controls that depend on theme colors
+        self.update_ui()
+        if hasattr(self, 'page') and self.page:
+            self.page.update()
+    
+    def _setup_theme(self):
+        """Setup theme colors without triggering UI updates (safe for init)"""
         theme = self.themes[self.current_theme]
         # Update page base color
-        self.page.bgcolor = theme["bg"]
-        # Set page theme mode for better default control contrast
-        self.page.theme_mode = ft.ThemeMode.DARK if self.current_theme == "cursor_dark" else ft.ThemeMode.LIGHT
+        if hasattr(self, 'page') and self.page:
+            self.page.bgcolor = theme["bg"]
+            # Set page theme mode for better default control contrast
+            self.page.theme_mode = ft.ThemeMode.DARK if self.current_theme == "cursor_dark" else ft.ThemeMode.LIGHT
 
         # Apply label and field styles for readability
         fg = theme["fg"]
         # Dropdowns
-        self.theme_dropdown.label = "Theme"
-        self.theme_dropdown.text_style = ft.TextStyle(color=fg)
-        self.theme_dropdown.label_style = ft.TextStyle(color=fg)
-        self.length_dropdown.text_style = ft.TextStyle(color=fg)
-        self.length_dropdown.label_style = ft.TextStyle(color=fg)
+        if hasattr(self, 'theme_dropdown') and self.theme_dropdown:
+            self.theme_dropdown.label = "Theme"
+            self.theme_dropdown.text_style = ft.TextStyle(color=fg)
+            self.theme_dropdown.label_style = ft.TextStyle(color=fg)
+        if hasattr(self, 'length_dropdown') and self.length_dropdown:
+            self.length_dropdown.text_style = ft.TextStyle(color=fg)
+            self.length_dropdown.label_style = ft.TextStyle(color=fg)
         # Switch label
-        self.keyboard_toggle.label = "Keyboard"
-        self.keyboard_toggle.label_style = ft.TextStyle(color=fg)
-
-        # Proactively refresh controls that depend on theme colors
-        self.update_ui()
-        self.page.update()
+        if hasattr(self, 'keyboard_toggle') and self.keyboard_toggle:
+            self.keyboard_toggle.label = "Keyboard"
+            self.keyboard_toggle.label_style = ft.TextStyle(color=fg)
     
     def create_letter_box(self, letter: str = "", color: str = None, is_current: bool = False) -> ft.Container:
         """Create a letter box for the game board"""
